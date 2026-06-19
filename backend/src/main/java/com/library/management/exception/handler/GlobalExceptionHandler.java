@@ -14,6 +14,7 @@ import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -92,6 +93,12 @@ public class GlobalExceptionHandler {
                 .orElse("Data integrity violation");
         log.warn("Data integrity violation: {}", message);
         return buildResponse(HttpStatus.CONFLICT, message, request.getRequestURI(), null);
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ErrorResponse> handleAccessDenied(AccessDeniedException ex, HttpServletRequest request) {
+        log.warn("Access denied for request: {}", request.getRequestURI());
+        return buildResponse(HttpStatus.FORBIDDEN, "Access denied: insufficient permissions", request.getRequestURI(), null);
     }
 
     @ExceptionHandler(Exception.class)
