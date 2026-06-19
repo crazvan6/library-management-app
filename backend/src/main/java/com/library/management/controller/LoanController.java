@@ -4,6 +4,8 @@ import com.library.management.dto.request.CheckoutRequest;
 import com.library.management.dto.request.ReturnBookRequest;
 import com.library.management.dto.response.CheckoutResponse;
 import com.library.management.dto.response.LoanResponse;
+import com.library.management.dto.response.LoanSummaryResponse;
+import com.library.management.dto.response.PageResponse;
 import com.library.management.dto.response.ReturnBookResponse;
 import com.library.management.entity.User;
 import com.library.management.exception.ForbiddenException;
@@ -13,6 +15,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
@@ -83,6 +87,13 @@ public class LoanController {
     @PreAuthorize("hasAnyRole('LIBRARIAN','ADMIN')")
     public ResponseEntity<List<LoanResponse>> getOverdueLoans() {
         return ResponseEntity.ok(loanService.getOverdueLoans());
+    }
+
+    @GetMapping
+    @PreAuthorize("hasAnyRole('LIBRARIAN','ADMIN')")
+    public ResponseEntity<PageResponse<LoanSummaryResponse>> getLoans(
+            @PageableDefault(size = 20, sort = "dueDate") Pageable pageable) {
+        return ResponseEntity.ok(loanService.getLoansPage(pageable));
     }
 
     @GetMapping("/reservation/{reservationId}")

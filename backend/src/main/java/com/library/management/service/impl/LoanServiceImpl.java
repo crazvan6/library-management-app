@@ -5,6 +5,8 @@ import com.library.management.dto.request.ReturnBookRequest;
 import com.library.management.dto.response.CheckoutResponse;
 import com.library.management.dto.response.FineResponse;
 import com.library.management.dto.response.LoanResponse;
+import com.library.management.dto.response.LoanSummaryResponse;
+import com.library.management.dto.response.PageResponse;
 import com.library.management.dto.response.ReturnBookResponse;
 import com.library.management.entity.Book;
 import com.library.management.entity.Loan;
@@ -29,6 +31,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -158,6 +161,11 @@ public class LoanServiceImpl implements LoanService {
         return loanRepository.findOverdueLoans(LocalDateTime.now()).stream()
                 .map(loanMapper::toLoanResponse)
                 .toList();
+    }
+
+    @Override
+    public PageResponse<LoanSummaryResponse> getLoansPage(Pageable pageable) {
+        return PageResponse.of(loanRepository.findAll(pageable).map(loanMapper::toLoanSummaryResponse));
     }
 
     @Override

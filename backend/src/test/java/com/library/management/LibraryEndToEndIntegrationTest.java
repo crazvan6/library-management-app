@@ -129,6 +129,28 @@ class LibraryEndToEndIntegrationTest {
                 .andExpect(jsonPath("$.content[0].title").value("Clean Code"));
     }
 
+    /** Scenario 5: paginated + sortable lending endpoints (req. #7) — Loans and Fines. */
+    @Test
+    void adminCanPageLoansAndFines() throws Exception {
+        seedUser("pager@lib.test", UserRole.ADMIN, null);
+        String adminToken = login("pager@lib.test");
+
+        mockMvc.perform(get("/v1/loans")
+                        .header("Authorization", "Bearer " + adminToken)
+                        .param("page", "0").param("size", "5").param("sort", "dueDate,desc"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content").isArray())
+                .andExpect(jsonPath("$.currentPage").value(0))
+                .andExpect(jsonPath("$.pageSize").value(5));
+
+        mockMvc.perform(get("/v1/fines")
+                        .header("Authorization", "Bearer " + adminToken)
+                        .param("page", "0").param("size", "5").param("sort", "amount,desc"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content").isArray())
+                .andExpect(jsonPath("$.currentPage").value(0));
+    }
+
     // ---------- helpers ----------
 
     private RegisterRequest registerRequest(String email, String studentId) {

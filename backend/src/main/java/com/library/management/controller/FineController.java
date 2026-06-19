@@ -3,6 +3,8 @@ package com.library.management.controller;
 import com.library.management.dto.request.PayFineRequest;
 import com.library.management.dto.request.WaiveFineRequest;
 import com.library.management.dto.response.FineResponse;
+import com.library.management.dto.response.FineSummaryResponse;
+import com.library.management.dto.response.PageResponse;
 import com.library.management.dto.response.UserFinesSummaryResponse;
 import com.library.management.entity.User;
 import com.library.management.exception.ForbiddenException;
@@ -11,6 +13,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
@@ -76,6 +80,13 @@ public class FineController {
     @PreAuthorize("hasAnyRole('LIBRARIAN','ADMIN')")
     public ResponseEntity<List<FineResponse>> getAllPendingFines() {
         return ResponseEntity.ok(fineService.getAllPendingFines());
+    }
+
+    @GetMapping
+    @PreAuthorize("hasAnyRole('LIBRARIAN','ADMIN')")
+    public ResponseEntity<PageResponse<FineSummaryResponse>> getFines(
+            @PageableDefault(size = 20, sort = "createdAt") Pageable pageable) {
+        return ResponseEntity.ok(fineService.getFinesPage(pageable));
     }
 
     @PostMapping("/pay")

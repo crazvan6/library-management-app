@@ -4,6 +4,7 @@ import com.library.management.dto.request.PayFineRequest;
 import com.library.management.dto.request.WaiveFineRequest;
 import com.library.management.dto.response.FineResponse;
 import com.library.management.dto.response.FineSummaryResponse;
+import com.library.management.dto.response.PageResponse;
 import com.library.management.dto.response.UserFinesSummaryResponse;
 import com.library.management.entity.Fine;
 import com.library.management.entity.Loan;
@@ -23,6 +24,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -129,6 +131,11 @@ public class FineServiceImpl implements FineService {
         return fineRepository.findAllPendingFines().stream()
                 .map(fineMapper::toFineResponse)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public PageResponse<FineSummaryResponse> getFinesPage(Pageable pageable) {
+        return PageResponse.of(fineRepository.findAll(pageable).map(fineMapper::toFineSummaryResponse));
     }
 
     @Override
