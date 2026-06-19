@@ -1,0 +1,45 @@
+# ===== OS / Editor =====
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+
+# ===== IDE =====
+.idea/
+*.iml
+*.iws
+*.ipr
+.vscode/
+.project
+.classpath
+.settings/
+
+# ===== Java / Maven (backend) =====
+target/
+!.mvn/wrapper/maven-wrapper.jar
+.mvn/wrapper/maven-wrapper.jar
+*.class
+HELP.md
+
+# ===== Logs =====
+logs/
+*.log
+
+# ===== Node / React (frontend) =====
+node_modules/
+dist/
+dist-ssr/
+build/
+.vite/
+*.local
+coverage/
+
+# ===== Env / secrets =====
+.env
+.env.*
+!.env.example
+*.db
+
+# ===== Reports =====
+htmlReport/
+site/
