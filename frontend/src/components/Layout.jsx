@@ -12,7 +12,9 @@ export default function Layout() {
           <NavLink to="/" end>Home</NavLink>
           {isAuthenticated && <NavLink to="/books">Catalog</NavLink>}
           {isAuthenticated && (role === 'LIBRARIAN' || role === 'ADMIN') && <NavLink to="/categories">Categories</NavLink>}
-          {/* Loans / Fines links are added in the FE-3 pull request */}
+          {isAuthenticated && <NavLink to="/reservations">Reservations</NavLink>}
+          {isAuthenticated && <NavLink to="/loans">Loans</NavLink>}
+          {isAuthenticated && <NavLink to="/fines">Fines</NavLink>}
         </nav>
         <div className="nav-right">
           {isAuthenticated ? (

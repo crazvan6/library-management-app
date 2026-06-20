@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { getBook, deleteBook } from '../api/catalogApi.js'
+import { createReservation } from '../api/lendingApi.js'
 import { apiErrorMessage } from '../api/client.js'
 import { useAuth } from '../auth/AuthContext.jsx'
 
@@ -10,9 +11,11 @@ export default function BookDetailPage() {
   const { role } = useAuth()
   const isStaff = role === 'LIBRARIAN' || role === 'ADMIN'
   const isAdmin = role === 'ADMIN'
+  const isStudent = role === 'STUDENT'
 
   const [book, setBook] = useState(null)
   const [error, setError] = useState(null)
+  const [msg, setMsg] = useState(null)
 
   useEffect(() => {
     getBook(id).then(setBook).catch((e) => setError(apiErrorMessage(e, 'Book not found')))
@@ -28,7 +31,17 @@ export default function BookDetailPage() {
     }
   }
 
-  if (error) return <div className="alert error">{error}</div>
+  const onReserve = async () => {
+    setError(null); setMsg(null)
+    try {
+      await createReservation(Number(id))
+      setMsg('Book reserved! Track it under "My reservations".')
+    } catch (err) {
+      setError(apiErrorMessage(err, 'Reservation failed'))
+    }
+  }
+
+  if (error && !book) return <div className="alert error">{error}</div>
   if (!book) return <p className="muted">Loading…</p>
 
   return (
@@ -37,10 +50,14 @@ export default function BookDetailPage() {
         <h1>{book.title}</h1>
         <div className="actions">
           <Link className="btn-ghost" to="/books">← Back</Link>
+          {isStudent && <button className="btn-primary inline" onClick={onReserve}>Reserve</button>}
           {isStaff && <Link className="btn-primary inline" to={`/books/${book.bookId}/edit`}>Edit</Link>}
           {isAdmin && <button className="btn-danger" onClick={onDelete}>Delete</button>}
         </div>
       </div>
+
+      {msg && <div className="alert success">{msg}</div>}
+      {error && <div className="alert error">{error}</div>}
 
       <div className="card book-detail">
         <dl>
