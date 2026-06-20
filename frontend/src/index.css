@@ -89,3 +89,34 @@ input:focus, select:focus { outline: 2px solid var(--primary); border-color: var
 /* ---- Misc ---- */
 .badge { display: inline-block; padding: 0.15rem 0.6rem; border-radius: 999px; font-size: 0.75rem; font-weight: 600; background: #eff6ff; color: var(--primary); }
 .stack { display: flex; flex-direction: column; gap: 1rem; }
+
+/* ---- Catalog / tables / toolbar ---- */
+.toolbar { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+.toolbar h1 { margin: 0; }
+.actions { display: flex; gap: 0.5rem; align-items: center; }
+.btn-primary.inline { width: auto; }
+.btn-ghost {
+  background: #fff; color: var(--primary); border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 0.5rem 0.9rem; font-size: 0.9rem; font-weight: 600; cursor: pointer; text-decoration: none;
+}
+.btn-ghost:hover { border-color: var(--primary); text-decoration: none; }
+.btn-ghost:disabled { opacity: 0.5; cursor: not-allowed; }
+.btn-danger {
+  background: var(--danger); color: #fff; border: none; border-radius: var(--radius);
+  padding: 0.5rem 0.9rem; font-size: 0.9rem; font-weight: 600; cursor: pointer;
+}
+.btn-danger:hover { background: #b91c1c; }
+.filters { display: flex; flex-wrap: wrap; gap: 0.6rem; align-items: center; }
+.filters input, .filters select { flex: 1 1 140px; min-width: 120px; }
+.checkbox { flex-direction: row; align-items: center; gap: 0.4rem; font-weight: 500; }
+.checkbox input { width: auto; }
+.table { width: 100%; border-collapse: collapse; }
+.table th, .table td { text-align: left; padding: 0.6rem 0.5rem; border-bottom: 1px solid var(--border); font-size: 0.92rem; }
+.table th { color: var(--muted); font-weight: 600; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.03em; }
+.pagination { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-top: 1rem; }
+.pagination-summary { margin-top: 1rem; }
+.book-detail dl { display: grid; grid-template-columns: 140px 1fr; gap: 0.5rem 1rem; margin: 0; }
+.book-detail dt { color: var(--muted); font-weight: 600; }
+.book-detail dd { margin: 0; }
+.categories-field { border: 1px solid var(--border); border-radius: 8px; padding: 0.75rem; display: flex; flex-direction: column; gap: 0.4rem; }
+.categories-field legend { font-weight: 600; font-size: 0.9rem; padding: 0 0.4rem; }
