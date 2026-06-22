@@ -10,7 +10,9 @@ export default function Layout() {
         <Link to="/" className="brand">📚 Library</Link>
         <nav>
           <NavLink to="/" end>Home</NavLink>
-          {/* Catalog / Loans / Fines links are added in the FE-2 and FE-3 pull requests */}
+          {isAuthenticated && <NavLink to="/books">Catalog</NavLink>}
+          {isAuthenticated && (role === 'LIBRARIAN' || role === 'ADMIN') && <NavLink to="/categories">Categories</NavLink>}
+          {/* Loans / Fines links are added in the FE-3 pull request */}
         </nav>
         <div className="nav-right">
           {isAuthenticated ? (
