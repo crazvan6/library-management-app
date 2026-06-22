@@ -25,13 +25,13 @@ jwt:
   expiration: ${JWT_EXPIRATION:86400000}
 
 library:
-  fine-config:
+  fine:
     rate-per-day: 0.50
     max-outstanding: 10.00
-  loan-config:
+  loan:
     duration-days: 14
     max-renewals: 1
-  reservation-config:
+  reservation:
     hold-hours: 48
   scheduling:
     expire-reservations-cron: "0 0 * * * *"
