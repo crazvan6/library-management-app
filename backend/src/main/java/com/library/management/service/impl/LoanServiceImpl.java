@@ -203,16 +203,20 @@ public class LoanServiceImpl implements LoanService {
             throw new InvalidOperationException("This book has already been returned");
         }
 
+        // Capture overdue days while the loan is still ACTIVE/OVERDUE — returnBook() flips it to RETURNED.
+        long daysOverdue = loan.getDaysOverdue();
+
         loan.returnBook(librarian);
         loanRepository.save(loan);
 
         loan.getBook().increaseAvailableQuantity();
         bookRepository.save(loan.getBook());
 
-        boolean wasOverdue = loan.getDaysOverdue() > 0;
+        boolean wasOverdue = daysOverdue > 0;
         FineResponse fineResponse = null;
-        if (wasOverdue) {
-            fineResponse = fineService.createFine(loan.getLoanId(), (int) loan.getDaysOverdue());
+        // Only create a fine if one doesn't already exist for this loan (the daily job may have created it).
+        if (wasOverdue && loan.getFine() == null) {
+            fineResponse = fineService.createFine(loan.getLoanId(), (int) daysOverdue);
         }
 
         ReturnBookResponse response = ReturnBookResponse.builder()
@@ -225,7 +229,7 @@ public class LoanServiceImpl implements LoanService {
                 .build();
 
         log.info("Book returned for loan {} by librarian {}. Days overdue: {}, Fine: {}",
-                loan.getLoanId(), librarianId, wasOverdue ? loan.getDaysOverdue() : 0,
+                loan.getLoanId(), librarianId, wasOverdue ? daysOverdue : 0,
                 fineResponse != null ? fineResponse.getAmount() : BigDecimal.ZERO);
         return response;
     }

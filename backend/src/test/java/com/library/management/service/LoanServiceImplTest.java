@@ -1,7 +1,9 @@
 package com.library.management.service;
 
 import com.library.management.dto.request.CheckoutRequest;
+import com.library.management.dto.request.ReturnBookRequest;
 import com.library.management.dto.response.CheckoutResponse;
+import com.library.management.dto.response.ReturnBookResponse;
 import com.library.management.entity.Book;
 import com.library.management.entity.Loan;
 import com.library.management.entity.Reservation;
@@ -160,6 +162,52 @@ class LoanServiceImplTest {
         assertThrows(ResourceNotFoundException.class, () -> loanService.getLoanByReservation(1L));
     }
 
+    @Test
+    void returnBook_overdueLoan_createsFine() {
+        User librarian = user(2L, UserRole.LIBRARIAN);
+        Book book = book(10L, 1, 0);
+        Loan loan = Loan.builder()
+                .loanId(7L)
+                .user(user(1L, UserRole.STUDENT))
+                .book(book)
+                .status(LoanStatus.ACTIVE)
+                .dueDate(LocalDateTime.now().minusDays(5).minusHours(1)) // 5 full days late
+                .build();
+
+        when(userRepository.findById(2L)).thenReturn(Optional.of(librarian));
+        when(loanRepository.findById(7L)).thenReturn(Optional.of(loan));
+        when(loanRepository.save(any(Loan.class))).thenAnswer(inv -> inv.getArgument(0));
+        when(fineService.createFine(7L, 5)).thenReturn(null);
+
+        ReturnBookResponse response = loanService.returnBook(returnRequest(7L), 2L);
+
+        assertTrue(response.getWasOverdue());
+        assertEquals(LoanStatus.RETURNED, loan.getStatus());
+        verify(fineService).createFine(7L, 5); // the bug previously never called this
+    }
+
+    @Test
+    void returnBook_onTimeLoan_noFine() {
+        User librarian = user(2L, UserRole.LIBRARIAN);
+        Book book = book(10L, 1, 0);
+        Loan loan = Loan.builder()
+                .loanId(8L)
+                .user(user(1L, UserRole.STUDENT))
+                .book(book)
+                .status(LoanStatus.ACTIVE)
+                .dueDate(LocalDateTime.now().plusDays(3)) // not due yet
+                .build();
+
+        when(userRepository.findById(2L)).thenReturn(Optional.of(librarian));
+        when(loanRepository.findById(8L)).thenReturn(Optional.of(loan));
+        when(loanRepository.save(any(Loan.class))).thenAnswer(inv -> inv.getArgument(0));
+
+        ReturnBookResponse response = loanService.returnBook(returnRequest(8L), 2L);
+
+        assertFalse(response.getWasOverdue());
+        verify(fineService, never()).createFine(anyLong(), anyInt());
+    }
+
     private CheckoutRequest checkoutRequest(Long userId, Long bookId, Long reservationId) {
         CheckoutRequest request = new CheckoutRequest();
         request.setUserId(userId);
@@ -188,6 +236,12 @@ class LoanServiceImplTest {
                 .availableQuantity(available)
                 .status(BookStatus.AVAILABLE)
                 .build();
+    }
+
+    private ReturnBookRequest returnRequest(Long loanId) {
+        ReturnBookRequest request = new ReturnBookRequest();
+        request.setLoanId(loanId);
+        return request;
     }
 }
 

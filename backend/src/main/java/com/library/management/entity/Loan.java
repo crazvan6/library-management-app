@@ -106,7 +106,8 @@ public class Loan {
     private Fine fine;
 
     public boolean isOverdue() {
-        return LoanStatus.ACTIVE.equals(status) && dueDate != null && LocalDateTime.now().isAfter(dueDate);
+        return status != null && !LoanStatus.RETURNED.equals(status)
+                && dueDate != null && LocalDateTime.now().isAfter(dueDate);
     }
 
     public boolean isActive() {
