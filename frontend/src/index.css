@@ -106,7 +106,7 @@ input:focus, select:focus { outline: 2px solid var(--primary); border-color: var
   padding: 0.5rem 0.9rem; font-size: 0.9rem; font-weight: 600; cursor: pointer;
 }
 .btn-danger:hover { background: #b91c1c; }
-.filters { display: flex; flex-wrap: wrap; gap: 0.6rem; align-items: center; }
+.filters { display: flex; flex-direction: row; flex-wrap: wrap; gap: 0.6rem; align-items: center; }
 .filters input, .filters select { flex: 1 1 140px; min-width: 120px; }
 .checkbox { flex-direction: row; align-items: center; gap: 0.4rem; font-weight: 500; }
 .checkbox input { width: auto; }
