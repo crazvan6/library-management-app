@@ -1,32 +1,58 @@
+import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { useAuth } from '../auth/AuthContext.jsx'
-
-const ROLE_BLURB = {
-  STUDENT: 'Browse the catalog, reserve books, and track your loans and fines.',
-  LIBRARIAN: 'Manage the catalog, check out and return books, and process fines.',
-  ADMIN: 'Full administration: users, catalog, loans, and fine waivers.',
-}
+import { myFinesSummary } from '../api/lendingApi.js'
+import { formatMoney } from '../utils/format.js'
 
 export default function HomePage() {
   const { user, role } = useAuth()
+  const [summary, setSummary] = useState(null)
+
+  useEffect(() => {
+    if (role === 'STUDENT') myFinesSummary().then(setSummary).catch(() => {})
+  }, [role])
+
+  const isStaff = role === 'LIBRARIAN' || role === 'ADMIN'
 
   return (
     <div className="stack">
       <div className="card">
         <h1>Welcome, {user?.fullName} 👋</h1>
-        <p className="muted">
-          You are signed in as <span className="badge">{role}</span>
-        </p>
-        <p>{ROLE_BLURB[role] || 'Welcome to the Library Management System.'}</p>
+        <p className="muted">Signed in as <span className="badge">{role}</span></p>
       </div>
 
-      <div className="card">
-        <h2>What's here</h2>
-        <ul>
-          <li><strong>Catalog</strong> — search and manage books &amp; categories <span className="muted">(coming in FE-2)</span></li>
-          <li><strong>Reservations &amp; loans</strong> — reserve, check out, return <span className="muted">(coming in FE-3)</span></li>
-          <li><strong>Fines</strong> — view, pay, and waive fines <span className="muted">(coming in FE-3)</span></li>
-        </ul>
-      </div>
+      {role === 'STUDENT' && (
+        <div className="card">
+          <h2>Your borrowing status</h2>
+          {summary ? (
+            <p>
+              Outstanding fines: <strong>{formatMoney(summary.totalOutstandingFines)}</strong>{' · '}
+              {summary.canBorrow
+                ? <span className="badge">Eligible to borrow</span>
+                : <span style={{ color: 'var(--danger)', fontWeight: 600 }}>Borrowing blocked</span>}
+            </p>
+          ) : <p className="muted">Loading…</p>}
+          <div className="actions">
+            <Link className="btn-primary inline" to="/books">Browse catalog</Link>
+            <Link className="btn-ghost" to="/reservations">My reservations</Link>
+            <Link className="btn-ghost" to="/loans">My loans</Link>
+            <Link className="btn-ghost" to="/fines">My fines</Link>
+          </div>
+        </div>
+      )}
+
+      {isStaff && (
+        <div className="card">
+          <h2>Quick actions</h2>
+          <div className="actions">
+            <Link className="btn-primary inline" to="/loans">Checkout / returns</Link>
+            <Link className="btn-ghost" to="/books">Manage catalog</Link>
+            <Link className="btn-ghost" to="/categories">Categories</Link>
+            <Link className="btn-ghost" to="/fines">Pending fines</Link>
+            <Link className="btn-ghost" to="/reservations">Reservations</Link>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
