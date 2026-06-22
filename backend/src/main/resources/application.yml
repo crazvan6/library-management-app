@@ -1,0 +1,39 @@
+spring:
+  application:
+    name: Library Management System
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:dev}
+  jpa:
+    open-in-view: false
+    properties:
+      hibernate:
+        format_sql: true
+
+server:
+  port: ${SERVER_PORT:8080}
+  servlet:
+    context-path: /api
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+  api-docs:
+    path: /v3/api-docs
+
+jwt:
+  secret: ${JWT_SECRET:Y2hhbmdlLXRoaXMtZGVmYXVsdC1zZWNyZXQta2V5LWZvci1saWJyYXJ5LW1hbmFnZW1lbnQtYXBwLTI1Ni1iaXQtbWluaW11bQ==}
+  expiration: ${JWT_EXPIRATION:86400000}
+
+library:
+  fine:
+    rate-per-day: 0.50
+    max-outstanding: 10.00
+  loan:
+    duration-days: 14
+    max-renewals: 1
+  reservation:
+    hold-hours: 48
+  scheduling:
+    expire-reservations-cron: "0 0 * * * *"
+    update-overdue-loans-cron: "0 0 1 * * *"
+    calculate-fines-cron: "0 0 1 * * *"
